@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPhone - Send Money Instantly</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .receiver-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .receiver-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.85em;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .receiver-address {
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            word-break: break-all;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .display {
+            background: #f8f9fa;
+            padding: 25px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .display:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .phone-input {
+            font-size: 2em;
+            text-align: center;
+            border: none;
+            background: transparent;
+            width: 100%;
+            color: #333;
+            outline: none;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        .phone-input::placeholder {
+            color: #aaa;
+        }
+
+        .input-hint {
+            font-size: 0.75em;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .key {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            user-select: none;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .key:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .key:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .key.special {
+            background: #f8f9fa;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+
+        .key.special:hover {
+            background: #ff6b6b;
+            color: white;
+            border-color: #ff6b6b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-clear {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-send:active, .btn-clear:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9em;
+            animation: slideDown 0.3s ease-out;
+            display: none;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .phone-input {
+                font-size: 1.6em;
+            }
+
+            .key {
+                padding: 15px;
+                font-size: 1.3em;
+            }
+
+            .btn {
+                padding: 15px;
+                font-size: 1em;
+            }
+        }
+
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+            25% {
+                transform: translateY(-100px) translateX(50px);
+            }
+            50% {
+                transform: translateY(-50px) translateX(-50px);
+            }
+            75% {
+                transform: translateY(-150px) translateX(30px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-particles" id="particles"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">📱💸</div>
+            <h1>PayPhone</h1>
+            <p class="subtitle">Send money with just a phone number</p>
+        </div>
+
+        <div class="receiver-info">
+            <div class="receiver-label">Receiver's Wallet</div>
+            <div class="receiver-address" id="receiverAddress">0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb8</div>
+        </div>
+
+        <div class="display">
+            <input 
+                type="tel" 
+                class="phone-input" 
+                id="phoneDisplay" 
+                placeholder="+1 234 567 890"
+                maxlength="15"
+            >
+            <div class="input-hint">Enter phone number with country code</div>
+        </div>
+
+        <div class="keypad">
+            <button class="key" onclick="addDigit('1')">1</button>
+            <button class="key" onclick="addDigit('2')">2</button>
+            <button class="key" onclick="addDigit('3')">3</button>
+            <button class="key" onclick="addDigit('4')">4</button>
+            <button class="key" onclick="addDigit('5')">5</button>
+            <button class="key" onclick="addDigit('6')">6</button>
+            <button class="key" onclick="addDigit('7')">7</button>
+            <button class="key" onclick="addDigit('8')">8</button>
+            <button class="key" onclick="addDigit('9')">9</button>
+            <button class="key special" onclick="addDigit('+')">+</button>
+            <button class="key" onclick="addDigit('0')">0</button>
+            <button class="key special" onclick="backspace()">⌫</button>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-clear" onclick="clearInput()">Clear</button>
+            <button class="btn btn-send" onclick="sendPayment()" id="sendBtn">Send Money</button>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.width = Math.random() * 60 + 20 + 'px';
+            particle.style.height = particle.style.width;
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            particle.style.animationDuration = Math.random() * 10 + 10 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        const phoneDisplay = document.getElementById('phoneDisplay');
+        const statusMessage = document.getElementById('statusMessage');
+        const sendBtn = document.getElementById('sendBtn');
+
+        // Allow typing in input
+        phoneDisplay.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9+]/g, '');
+        });
+
+        function addDigit(digit) {
+            if (phoneDisplay.value.length < 15) {
+                phoneDisplay.value += digit;
+                animateKey(event.target);
+            }
+        }
+
+        function backspace() {
+            phoneDisplay.value = phoneDisplay.value.slice(0, -1);
+            animateKey(event.target);
+        }
+
+        function clearInput() {
+            phoneDisplay.value = '';
+            hideStatus();
+            animateKey(event.target);
+        }
+
+        function animateKey(element) {
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        function sendPayment() {
+            const phoneNumber = phoneDisplay.value.trim();
+            
+            if (!phoneNumber) {
+                showStatus('Please enter a phone number', 'error');
+                return;
+            }
+
+            if (!phoneNumber.startsWith('+')) {
+                showStatus('Phone number must start with country code (+)', 'error');
+                return;
+            }
+
+            if (phoneNumber.length < 10) {
+                showStatus('Please enter a valid phone number', 'error');
+                return;
+            }
+
+            // Simulate sending payment
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+            
+            setTimeout(() => {
+                showStatus('Payment sent successfully! 🎉', 'success');
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Money';
+                
+                // Clear after success
+                setTimeout(() => {
+                    clearInput();
+                    hideStatus();
+                }, 3000);
+            }, 1500);
+        }
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+        }
+
+        function hideStatus() {
+            statusMessage.className = 'status-message';
+        }
+
+        // Allow Enter key to send
+        phoneDisplay.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendPayment();
+            }
+        });
+
+        // Update receiver address every 10 seconds (simulate dynamic)
+        setInterval(() => {
+            const addresses = [
+                '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb8',
+                '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed',
+                '0x1234567890abcdef1234567890abcdef12345678'
+            ];
+            const randomAddress = addresses[Math.floor(Math.random() * addresses.length)];
+            document.getElementById('receiverAddress').textContent = randomAddress;
+        }, 10000);
+    </script>
+</body>
+</html>

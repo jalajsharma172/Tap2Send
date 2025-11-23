@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayPhone - Send Money Instantly</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated background with moving phone numbers */
+        .animated-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .moving-transaction {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+
+        .moving-transaction.user-transaction {
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .moving-transaction.user-transaction .phone-number,
+        .moving-transaction.user-transaction .arrow,
+        .moving-transaction.user-transaction .amount {
+            color: #ffffff !important;
+            font-weight: 900 !important;
+            font-size: 16px !important;
+            text-shadow: 0 0 20px #ffffff, 0 0 30px #ffffff !important;
+        }
+
+        .phone-number {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+        }
+
+        .arrow {
+            color: #00ff00;
+            font-size: 20px;
+        }
+
+        .amount {
+            color: #00ff00;
+            font-size: 12px;
+        }
+
+        /* Different animation directions */
+        @keyframes moveLeftToRight {
+            0% {
+                left: -300px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                left: calc(100% + 300px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes moveRightToLeft {
+            0% {
+                right: -300px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                right: calc(100% + 300px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes moveDiagonalTL {
+            0% {
+                top: -100px;
+                left: -300px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                top: calc(100% + 100px);
+                left: calc(100% + 300px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes moveDiagonalTR {
+            0% {
+                top: -100px;
+                right: -300px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                top: calc(100% + 100px);
+                right: calc(100% + 300px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes moveDiagonalBL {
+            0% {
+                bottom: -100px;
+                left: -300px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                bottom: calc(100% + 100px);
+                left: calc(100% + 300px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes moveDiagonalBR {
+            0% {
+                bottom: -100px;
+                right: -300px;
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            90% {
+                opacity: 0.7;
+            }
+            100% {
+                bottom: calc(100% + 100px);
+                right: calc(100% + 300px);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 380px;
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px 18px;
+            box-shadow: 0 10px 40px rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 1;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+
+        .logo {
+            font-size: 1.8em;
+            margin-bottom: 6px;
+        }
+
+        h1 {
+            color: #333333;
+            font-size: 1.4em;
+            margin-bottom: 4px;
+            font-weight: 500;
+        }
+
+        .subtitle {
+            color: #666666;
+            font-size: 0.8em;
+            font-weight: 400;
+        }
+
+        .receiver-info {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .receiver-label {
+            color: #666666;
+            font-size: 0.7em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .receiver-address {
+            color: #333333;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            word-break: break-all;
+            background: #ffffff;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .display {
+            background: #f9f9f9;
+            padding: 15px 12px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .phone-input {
+            font-size: 1.5em;
+            text-align: center;
+            border: none;
+            background: transparent;
+            width: 100%;
+            color: #333333;
+            outline: none;
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+
+        .phone-input::placeholder {
+            color: #aaaaaa;
+            font-weight: 300;
+        }
+
+        .input-hint {
+            font-size: 0.65em;
+            color: #999999;
+            margin-top: 5px;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .key {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 50%;
+            padding: 0;
+            width: 100%;
+            aspect-ratio: 1;
+            font-size: 1.4em;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+            user-select: none;
+            font-weight: 300;
+            color: #333333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .key:hover {
+            background: #f5f5f5;
+            transform: scale(0.95);
+        }
+
+        .key:active {
+            background: #e0e0e0;
+            transform: scale(0.9);
+        }
+
+        .key.special {
+            background: #ffffff;
+            color: #666666;
+            font-size: 1.1em;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 25px;
+            font-size: 0.9em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-clear {
+            background: #f5f5f5;
+            color: #666666;
+            border: 1px solid #e0e0e0;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-send {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-send:hover {
+            background: #45a049;
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-send:active, .btn-clear:active {
+            transform: scale(0.98);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.85em;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.4em;
+            }
+
+            .phone-input {
+                font-size: 1.5em;
+            }
+
+            .key {
+                font-size: 1.5em;
+            }
+
+            .btn {
+                padding: 14px;
+                font-size: 0.9em;
+            }
+
+            .moving-transaction {
+                font-size: 11px;
+            }
+
+            .moving-transaction.user-transaction .phone-number,
+            .moving-transaction.user-transaction .arrow,
+            .moving-transaction.user-transaction .amount {
+                font-size: 13px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-background" id="animatedBg"></div>
+    
+    <div class="container">
+        <div class="header">
+            <div class="logo">📱💸</div>
+            <h1>PayPhone</h1>
+            <p class="subtitle">Send money with just a phone number</p>
+        </div>
+
+        <div class="receiver-info">
+            <div class="receiver-label">Receiver's Wallet</div>
+            <div class="receiver-address" id="receiverAddress">0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed</div>
+        </div>
+
+        <div class="display">
+            <input 
+                type="tel" 
+                class="phone-input" 
+                id="phoneDisplay" 
+                placeholder="+1 234 567 890"
+                maxlength="15"
+            >
+            <div class="input-hint">Enter phone number with country code</div>
+        </div>
+
+        <div class="keypad">
+            <button class="key" onclick="addDigit('1')">1</button>
+            <button class="key" onclick="addDigit('2')">2</button>
+            <button class="key" onclick="addDigit('3')">3</button>
+            <button class="key" onclick="addDigit('4')">4</button>
+            <button class="key" onclick="addDigit('5')">5</button>
+            <button class="key" onclick="addDigit('6')">6</button>
+            <button class="key" onclick="addDigit('7')">7</button>
+            <button class="key" onclick="addDigit('8')">8</button>
+            <button class="key" onclick="addDigit('9')">9</button>
+            <button class="key special" onclick="addDigit('+')">+</button>
+            <button class="key" onclick="addDigit('0')">0</button>
+            <button class="key special" onclick="backspace()">⌫</button>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-clear" onclick="clearInput()">Clear</button>
+            <button class="btn btn-send" onclick="sendPayment()" id="sendBtn">Send Money</button>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        const phoneDisplay = document.getElementById('phoneDisplay');
+        const statusMessage = document.getElementById('statusMessage');
+        const sendBtn = document.getElementById('sendBtn');
+        const animatedBg = document.getElementById('animatedBg');
+
+        // Sample phone numbers for animation
+        const phoneNumbers = [
+            '+1 415 555 0123',
+            '+44 20 7946 0958',
+            '+91 98765 43210',
+            '+81 3 1234 5678',
+            '+49 30 12345678',
+            '+33 1 42 86 82 00',
+            '+61 2 9876 5432',
+            '+86 10 1234 5678',
+            '+7 495 123 4567',
+            '+55 11 98765 4321',
+            '+82 2 1234 5678',
+            '+39 06 1234 5678',
+            '+34 91 123 4567',
+            '+52 55 1234 5678',
+            '+27 21 123 4567',
+            '+971 4 123 4567',
+            '+65 6123 4567',
+            '+63 2 1234 5678',
+            '+62 21 1234 5678',
+            '+60 3 1234 5678',
+            '+66 2 123 4567',
+            '+84 24 1234 5678',
+            '+92 21 1234 5678',
+            '+20 2 1234 5678',
+            '+234 1 234 5678',
+            '+254 20 123 4567',
+            '+94 11 234 5678',
+            '+880 2 1234 5678',
+            '+977 1 234 5678',
+            '+94 11 234 5678'
+        ];
+
+        // Animation types
+        const animations = [
+            { name: 'moveLeftToRight', style: 'left' },
+            { name: 'moveRightToLeft', style: 'right' },
+            { name: 'moveDiagonalTL', style: 'diagonal-tl' },
+            { name: 'moveDiagonalTR', style: 'diagonal-tr' },
+            { name: 'moveDiagonalBL', style: 'diagonal-bl' },
+            { name: 'moveDiagonalBR', style: 'diagonal-br' }
+        ];
+
+        function createMovingTransaction(isUserTransaction = false, userPhone = null, receiverPhone = null, userAmount = null) {
+            const transaction = document.createElement('div');
+            transaction.className = isUserTransaction ? 'moving-transaction user-transaction' : 'moving-transaction';
+            
+            const sender = isUserTransaction ? userPhone : phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)];
+            const receiver = isUserTransaction ? receiverPhone : phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)];
+            const amount = isUserTransaction ? userAmount : '$' + (Math.random() * 500 + 10).toFixed(2);
+            
+            transaction.innerHTML = `
+                <span class="phone-number">${sender}</span>
+                <span class="arrow">→</span>
+                <span class="phone-number">${receiver}</span>
+                <span class="amount">${amount}</span>
+            `;
+            
+            // Random animation
+            const animation = animations[Math.floor(Math.random() * animations.length)];
+            const duration = isUserTransaction ? 12 : (Math.random() * 10 + 8); // User transactions slower
+            const delay = 0;
+            
+            // Random vertical position
+            const verticalPos = Math.random() * 100;
+            
+            if (animation.style === 'left') {
+                transaction.style.top = verticalPos + '%';
+                transaction.style.animation = `${animation.name} ${duration}s linear ${delay}s`;
+            } else if (animation.style === 'right') {
+                transaction.style.top = verticalPos + '%';
+                transaction.style.animation = `${animation.name} ${duration}s linear ${delay}s`;
+            } else {
+                transaction.style.animation = `${animation.name} ${duration}s linear ${delay}s`;
+            }
+            
+            animatedBg.appendChild(transaction);
+            
+            // Remove after animation
+            setTimeout(() => {
+                transaction.remove();
+            }, (duration + delay) * 1000);
+        }
+
+        // Create background transactions continuously
+        setInterval(() => createMovingTransaction(false), 500);
+        
+        // Create initial batch
+        for (let i = 0; i < 15; i++) {
+            setTimeout(() => createMovingTransaction(false), i * 200);
+        }
+
+        // Allow typing in input
+        phoneDisplay.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9+]/g, '');
+        });
+
+        // Keyboard support - capture all number keys and special keys
+        document.addEventListener('keydown', function(e) {
+            // Numbers 0-9
+            if (e.key >= '0' && e.key <= '9') {
+                e.preventDefault();
+                addDigit(e.key);
+            }
+            // Plus key
+            else if (e.key === '+' || (e.shiftKey && e.key === '=')) {
+                e.preventDefault();
+                addDigit('+');
+            }
+            // Backspace
+            else if (e.key === 'Backspace') {
+                e.preventDefault();
+                backspace();
+            }
+            // Delete key
+            else if (e.key === 'Delete') {
+                e.preventDefault();
+                clearInput();
+            }
+            // Enter to send
+            else if (e.key === 'Enter') {
+                e.preventDefault();
+                sendPayment();
+            }
+        });
+
+        function addDigit(digit) {
+            if (phoneDisplay.value.length < 15) {
+                phoneDisplay.value += digit;
+                phoneDisplay.focus(); // Keep focus on input
+                // Animate corresponding key button if clicked
+                if (event && event.target) {
+                    animateKey(event.target);
+                }
+            }
+        }
+
+        function backspace() {
+            phoneDisplay.value = phoneDisplay.value.slice(0, -1);
+            phoneDisplay.focus(); // Keep focus on input
+            if (event && event.target) {
+                animateKey(event.target);
+            }
+        }
+
+        function clearInput() {
+            phoneDisplay.value = '';
+            phoneDisplay.focus(); // Keep focus on input
+            hideStatus();
+            if (event && event.target) {
+                animateKey(event.target);
+            }
+        }
+
+        function animateKey(element) {
+            if (element) {
+                element.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    element.style.transform = 'scale(1)';
+                }, 100);
+            }
+        }
+
+        function sendPayment() {
+            const phoneNumber = phoneDisplay.value.trim();
+            
+            if (!phoneNumber) {
+                showStatus('Please enter a phone number', 'error');
+                return;
+            }
+
+            if (!phoneNumber.startsWith('+')) {
+                showStatus('Phone number must start with country code (+)', 'error');
+                return;
+            }
+
+            if (phoneNumber.length < 10) {
+                showStatus('Please enter a valid phone number', 'error');
+                return;
+            }
+
+            // Simulate sending payment
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Sending...';
+            
+            setTimeout(() => {
+                showStatus('Payment sent successfully! 🎉', 'success');
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send Money';
+                
+                // Create user's transaction in background (in WHITE and BOLD)
+                const randomAmount = '$' + (Math.random() * 500 + 50).toFixed(2);
+                const receiverPhone = phoneNumbers[Math.floor(Math.random() * phoneNumbers.length)];
+                
+                // Create 3 instances of the user's transaction for visibility
+                setTimeout(() => createMovingTransaction(true, phoneNumber, receiverPhone, randomAmount), 500);
+                setTimeout(() => createMovingTransaction(true, phoneNumber, receiverPhone, randomAmount), 2000);
+                setTimeout(() => createMovingTransaction(true, phoneNumber, receiverPhone, randomAmount), 4000);
+                
+                // Clear after success
+                setTimeout(() => {
+                    clearInput();
+                    hideStatus();
+                }, 3000);
+            }, 1500);
+        }
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+        }
+
+        function hideStatus() {
+            statusMessage.className = 'status-message';
+        }
+
+        // Allow Enter key to send
+        phoneDisplay.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendPayment();
+            }
+        });
+
+        // Update receiver address periodically
+        const addresses = [
+            '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb8',
+            '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed',
+            '0x1234567890abcdef1234567890abcdef12345678',
+            '0xdAC17F958D2ee523a2206206994597C13D831ec7',
+            '0xB8c77482e45F1F44dE1745F52C74426C631bDD52'
+        ];
+        
+        setInterval(() => {
+            const randomAddress = addresses[Math.floor(Math.random() * addresses.length)];
+            document.getElementById('receiverAddress').textContent = randomAddress;
+        }, 8000);
+    </script>
+</body>
+</html>
