@@ -6,6 +6,12 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
 
 function Router() {
+
+  
+
+
+
+
   return (
     <Switch>
       <Route path="/" component={Home} />
