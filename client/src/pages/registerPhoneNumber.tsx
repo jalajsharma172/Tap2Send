@@ -23,7 +23,7 @@ export default function RegisterPhonePage() {
     useState<"idle" | "validating" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Load contract on mount
+  // Load contract on mountsetErrorMessage
 useEffect(() => {
     async function loadContract() {
       const c = getContract({
