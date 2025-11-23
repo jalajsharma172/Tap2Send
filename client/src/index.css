@@ -286,3 +286,437 @@
     inset: -1px;
   }
 }
+
+/* PayPhone Application Styles */
+.payphone-container {
+  font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #000000;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.payphone-animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.payphone-moving-transaction {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.payphone-moving-transaction.payphone-user-transaction {
+  opacity: 1;
+  z-index: 10;
+}
+
+.payphone-moving-transaction.payphone-user-transaction .payphone-phone-number,
+.payphone-moving-transaction.payphone-user-transaction .payphone-arrow,
+.payphone-moving-transaction.payphone-user-transaction .payphone-amount {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  font-size: 16px !important;
+  text-shadow: 0 0 20px #ffffff, 0 0 30px #ffffff !important;
+}
+
+.payphone-phone-number {
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.payphone-arrow {
+  color: #00ff00;
+  font-size: 20px;
+}
+
+.payphone-amount {
+  color: #00ff00;
+  font-size: 12px;
+}
+
+@keyframes moveLeftToRight {
+  0% {
+    left: -300px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    left: calc(100% + 300px);
+    opacity: 0;
+  }
+}
+
+@keyframes moveRightToLeft {
+  0% {
+    right: -300px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    right: calc(100% + 300px);
+    opacity: 0;
+  }
+}
+
+@keyframes moveDiagonalTL {
+  0% {
+    top: -100px;
+    left: -300px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    top: calc(100% + 100px);
+    left: calc(100% + 300px);
+    opacity: 0;
+  }
+}
+
+@keyframes moveDiagonalTR {
+  0% {
+    top: -100px;
+    right: -300px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    top: calc(100% + 100px);
+    right: calc(100% + 300px);
+    opacity: 0;
+  }
+}
+
+@keyframes moveDiagonalBL {
+  0% {
+    bottom: -100px;
+    left: -300px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    bottom: calc(100% + 100px);
+    left: calc(100% + 300px);
+    opacity: 0;
+  }
+}
+
+@keyframes moveDiagonalBR {
+  0% {
+    bottom: -100px;
+    right: -300px;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.7;
+  }
+  90% {
+    opacity: 0.7;
+  }
+  100% {
+    bottom: calc(100% + 100px);
+    right: calc(100% + 300px);
+    opacity: 0;
+  }
+}
+
+.payphone-card {
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px 18px;
+  box-shadow: 0 10px 40px rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 1;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+.payphone-header {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.payphone-logo {
+  font-size: 1.8em;
+  margin-bottom: 6px;
+}
+
+.payphone-title {
+  color: #333333;
+  font-size: 1.4em;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.payphone-subtitle {
+  color: #666666;
+  font-size: 0.8em;
+  font-weight: 400;
+}
+
+.payphone-receiver-info {
+  background: #f5f5f5;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  border: 1px solid #e0e0e0;
+}
+
+.payphone-receiver-label {
+  color: #666666;
+  font-size: 0.7em;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+.payphone-receiver-address {
+  color: #333333;
+  font-family: 'Courier New', monospace;
+  font-size: 0.75em;
+  word-break: break-all;
+  background: #ffffff;
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.payphone-display {
+  background: #f9f9f9;
+  padding: 15px 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+}
+
+.payphone-phone-input {
+  font-size: 1.5em;
+  text-align: center;
+  border: none;
+  background: transparent;
+  width: 100%;
+  color: #333333;
+  outline: none;
+  font-family: 'Roboto', sans-serif;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+
+.payphone-phone-input::placeholder {
+  color: #aaaaaa;
+  font-weight: 300;
+}
+
+.payphone-input-hint {
+  font-size: 0.65em;
+  color: #999999;
+  margin-top: 5px;
+}
+
+.payphone-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.payphone-key {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 50%;
+  padding: 0;
+  width: 100%;
+  aspect-ratio: 1;
+  font-size: 1.4em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+  user-select: none;
+  font-weight: 300;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.payphone-key:hover {
+  background: #f5f5f5;
+  transform: scale(0.95);
+}
+
+.payphone-key:active {
+  background: #e0e0e0;
+  transform: scale(0.9);
+}
+
+.payphone-key-special {
+  background: #ffffff;
+  color: #666666;
+  font-size: 1.1em;
+}
+
+.payphone-action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.payphone-btn {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: 25px;
+  font-size: 0.9em;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payphone-btn-clear {
+  background: #f5f5f5;
+  color: #666666;
+  border: 1px solid #e0e0e0;
+}
+
+.payphone-btn-clear:hover {
+  background: #e0e0e0;
+}
+
+.payphone-btn-send {
+  background: #4CAF50;
+  color: white;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.payphone-btn-send:hover {
+  background: #45a049;
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.payphone-btn-send:active,
+.payphone-btn-clear:active {
+  transform: scale(0.98);
+}
+
+.payphone-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.payphone-status-message {
+  margin-top: 15px;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.85em;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payphone-status-success {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.payphone-status-error {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 480px) {
+  .payphone-card {
+    padding: 20px 15px;
+  }
+
+  .payphone-title {
+    font-size: 1.4em;
+  }
+
+  .payphone-phone-input {
+    font-size: 1.5em;
+  }
+
+  .payphone-key {
+    font-size: 1.5em;
+  }
+
+  .payphone-btn {
+    padding: 14px;
+    font-size: 0.9em;
+  }
+
+  .payphone-moving-transaction {
+    font-size: 11px;
+  }
+
+  .payphone-moving-transaction.payphone-user-transaction .payphone-phone-number,
+  .payphone-moving-transaction.payphone-user-transaction .payphone-arrow,
+  .payphone-moving-transaction.payphone-user-transaction .payphone-amount {
+    font-size: 13px !important;
+  }
+}
