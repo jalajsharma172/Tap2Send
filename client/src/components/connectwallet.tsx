@@ -3,7 +3,7 @@ import { createThirdwebClient } from "thirdweb";
 import { createWallet } from "thirdweb/wallets";
 
 const client = createThirdwebClient({
-  clientId: "....",
+  clientId: "ed4bcdc6d450e0296557ec799c7ab19b",
 });
 
 const wallets = [
@@ -14,7 +14,7 @@ const wallets = [
   createWallet("io.zerion.wallet"),
 ];
 
-function Example() {
+export function Example() {
   return (
     <ConnectButton
       client={client}

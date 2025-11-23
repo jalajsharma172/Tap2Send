@@ -1,4 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { readContract } from "thirdweb";
+import {Example} from '../components/connectwallet';
+import { getContract,createThirdwebClient } from "thirdweb";
+import ABI from '../utils/abi.json';
+import { sepolia } from "thirdweb/chains";
 
 interface Transaction {
   id: string;
@@ -30,14 +35,87 @@ const ANIMATIONS = [
   { name: 'moveDiagonalBL', style: 'diagonal-bl' },
   { name: 'moveDiagonalBR', style: 'diagonal-br' }
 ];
+  // Load contract on mount
+  export const client = createThirdwebClient({
+    clientId: "ed4bcdc6d450e0296557ec799c7ab19b", // required
+  });
+  
 
-const RECEIVER_WALLET = '0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed';
+let RECEIVER_WALLET = 'WALLETADDRES';
+const CONTRACT_ADDRESS='0x395595376CCEc7C3aC9BC8543F2eF80Bee31F0d9';
+
+
+
+
+
 
 export default function Home() {
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [lookupResult, setLookupResult] = useState<string>('');
   const [statusMessage, setStatusMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [contract, setContract] = useState<any>(null);
+
+
+
+useEffect(() => {
+    async function loadContract() {
+      const c = getContract({
+        client,
+        chain: sepolia,
+        address: CONTRACT_ADDRESS,
+        abi: ABI, // ✔ MUST INCLUDE ABI
+      });
+      setContract(c);
+    }
+    loadContract();
+  }, []);
+
+
+
+
+async function lookupWallet(rawPhone: string) {
+  try {
+    if (!contract) throw new Error("Contract not loaded");
+
+    // Remove + or spaces
+    const cleaned = rawPhone.replace(/[+ ]/g, "");
+    const phoneUint = BigInt(cleaned);
+
+    const wallet = await readContract({
+      contract,
+      method: "phonenumberToAddress",
+      params: [phoneUint],   // MUST be uint256
+    });
+
+    console.log("Wallet:", wallet);
+    RECEIVER_WALLET=wallet;
+    setLookupResult(wallet || "Not registered");
+  } catch (err) {
+    console.error(err);
+    setLookupResult("Error fetching address");
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+  useEffect(()=>{
+    if (phoneNumber.length === 10) {
+     console.log(phoneNumber);
+     
+      lookupWallet(phoneNumber);
+    }
+  },[phoneNumber])
+
 
   const createTransaction = useCallback((isUser: boolean, userPhone?: string, receiverPhone?: string, userAmount?: string) => {
     const animation = ANIMATIONS[Math.floor(Math.random() * ANIMATIONS.length)];
@@ -125,10 +203,7 @@ export default function Home() {
       return;
     }
 
-    if (!trimmedPhone.startsWith('+')) {
-      showStatus('Phone number must start with country code (+)', 'error');
-      return;
-    }
+   
 
     if (trimmedPhone.length < 10) {
       showStatus('Please enter a valid phone number', 'error');
@@ -178,6 +253,7 @@ export default function Home() {
 
       <div className="payphone-card">
         <div className="payphone-header">
+          {/* <Example /> */}
           <div className="payphone-logo">📱💸</div>
           <h1 className="payphone-title">PayPhone</h1>
           <p className="payphone-subtitle">Send money with just a phone number</p>
